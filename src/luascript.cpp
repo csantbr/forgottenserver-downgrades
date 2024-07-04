@@ -431,16 +431,16 @@ void LuaScriptInterface::removeEvent(int32_t scriptId)
 	}
 
 	// get our events table
-	lua_rawgeti(L, LUA_REGISTRYINDEX, eventTableRef);
-	if (!lua_istable(L, -1)) {
-		lua_pop(L, 1);
+	lua_rawgeti(luaState, LUA_REGISTRYINDEX, eventTableRef);
+	if (!lua_istable(luaState, -1)) {
+		lua_pop(luaState, 1);
 		return;
 	}
 
 	// remove event from table
-	lua_pushnil(L);
-	lua_rawseti(L, -2, scriptId);
-	lua_pop(L, 1);
+	lua_pushnil(luaState);
+	lua_rawseti(luaState, -2, scriptId);
+	lua_pop(luaState, 1);
 
 	cacheFiles.erase(scriptId);
 }
@@ -12161,7 +12161,7 @@ int LuaScriptInterface::luaNpcTypeParameter(lua_State* L)
 		if (lua_gettop(L) == 1) {
 			lua_createtable(L, npcType->parameters.size(), 0);
 			for (auto i : npcType->parameters) {
-				setField(L, i.first, i.second);
+				setField(L, i.first.c_str(), i.second);
 			}
 		} else {
 			std::string key = getString(L, 2);

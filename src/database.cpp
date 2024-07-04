@@ -9,7 +9,7 @@
 
 #include <mysql/errmsg.h>
 
-static tfs::detail::Mysql_ptr connectToDatabase(const bool retryIfError)
+static Mysql_ptr connectToDatabase(const bool retryIfError)
 {
 	bool isFirstAttemptToConnect = true;
 
@@ -19,7 +19,7 @@ retry:
 	}
 	isFirstAttemptToConnect = false;
 
-	tfs::detail::Mysql_ptr handle{mysql_init(nullptr)};
+	Mysql_ptr handle{mysql_init(nullptr)};
 	if (!handle) {
 		std::cout << std::endl << "Failed to initialize MySQL connection handle." << std::endl;
 		goto error;
@@ -120,7 +120,7 @@ retry:
 
 	// we should call that every time as someone would call executeQuery('SELECT...')
 	// as it is described in MySQL manual: "it doesn't hurt" :P
-	tfs::detail::MysqlResult_ptr res{mysql_store_result(handle.get())};
+	MysqlResult_ptr res{mysql_store_result(handle.get())};
 	if (!res) {
 		std::cout << "[Error - mysql_store_result] Query: " << query << std::endl
 		          << "Message: " << mysql_error(handle.get()) << std::endl;
@@ -159,7 +159,7 @@ std::string Database::escapeBlob(const char* s, uint32_t length) const
 	return escaped;
 }
 
-DBResult::DBResult(tfs::detail::MysqlResult_ptr&& res) : handle{std::move(res)}
+DBResult::DBResult(MysqlResult_ptr&& res) : handle{std::move(res)}
 {
 	size_t i = 0;
 

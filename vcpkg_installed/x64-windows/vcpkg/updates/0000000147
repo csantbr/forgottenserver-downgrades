@@ -1,0 +1,8 @@
+Package: boost-parameter
+Version: 1.84.0
+Depends: boost-config, boost-core, boost-function, boost-fusion, boost-mp11, boost-mpl, boost-optional, boost-preprocessor, boost-type-traits, boost-utility, boost-vcpkg-helpers
+Architecture: x64-windows
+Multi-Arch: same
+Abi: bc746980e751d4050a9458e7005c0c82e23306e9650d99533ece168a4dcbd3f4
+Description: Boost parameter module
+Status: install ok installed

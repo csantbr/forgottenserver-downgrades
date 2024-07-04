@@ -1,0 +1,8 @@
+Package: boost-lexical-cast
+Version: 1.84.0
+Depends: boost-config, boost-container, boost-core, boost-integer, boost-numeric-conversion, boost-throw-exception, boost-type-traits, boost-vcpkg-helpers
+Architecture: x64-windows
+Multi-Arch: same
+Abi: a9968b514216b33fc7054c50c475cd5e8f02a6ad06d59eebf9e25c191955fe1a
+Description: Boost lexical_cast module
+Status: install ok installed

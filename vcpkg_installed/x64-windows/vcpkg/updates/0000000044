@@ -1,0 +1,8 @@
+Package: boost-detail
+Version: 1.84.0
+Depends: boost-config, boost-core, boost-preprocessor, boost-static-assert, boost-type-traits, boost-vcpkg-helpers
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 3c4331d731f836dd496d3f54a07dca0f0f3e6ad76ed1aec02a0ddc35ed95d187
+Description: Boost detail module
+Status: install ok half-installed

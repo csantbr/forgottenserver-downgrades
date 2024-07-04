@@ -9,8 +9,6 @@
 class DBResult;
 using DBResult_ptr = std::shared_ptr<DBResult>;
 
-namespace tfs::detail {
-
 struct MysqlDeleter
 {
 	void operator()(MYSQL* handle) const { mysql_close(handle); }
@@ -19,8 +17,6 @@ struct MysqlDeleter
 
 using Mysql_ptr = std::unique_ptr<MYSQL, MysqlDeleter>;
 using MysqlResult_ptr = std::unique_ptr<MYSQL_RES, MysqlDeleter>;
-
-} // namespace tfs::detail
 
 class Database
 {
@@ -114,7 +110,7 @@ private:
 	bool rollback();
 	bool commit();
 
-	tfs::detail::Mysql_ptr handle = nullptr;
+	Mysql_ptr handle = nullptr;
 	std::recursive_mutex databaseLock;
 	uint64_t maxPacketSize = 1048576;
 	// Do not retry queries if we are in the middle of a transaction
@@ -126,7 +122,7 @@ private:
 class DBResult
 {
 public:
-	explicit DBResult(tfs::detail::MysqlResult_ptr&& res);
+	explicit DBResult(MysqlResult_ptr&& res);
 
 	// non-copyable
 	DBResult(const DBResult&) = delete;
@@ -155,7 +151,7 @@ public:
 	bool next();
 
 private:
-	tfs::detail::MysqlResult_ptr handle;
+	MysqlResult_ptr handle;
 	MYSQL_ROW row;
 
 	std::map<std::string_view, size_t> listNames;

@@ -1,0 +1,10 @@
+Package: libmariadb
+Version: 3.3.1
+Port-Version: 3
+Depends: vcpkg-cmake, vcpkg-cmake-config, zlib
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 2caa71032cd83f7805381e666fac08dad0e2225b7ed991cc49938660e9cd4857
+Description: MariaDB Connector/C is used to connect C/C++ applications to MariaDB and MySQL databases
+Default-Features: ssl
+Status: install ok half-installed
