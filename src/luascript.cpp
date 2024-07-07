@@ -18,7 +18,6 @@
 #include "inbox.h"
 #include "iologindata.h"
 #include "iomapserialize.h"
-#include "iomarket.h"
 #include "luavariant.h"
 #include "matrixarea.h"
 #include "monster.h"
@@ -1623,7 +1622,6 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(MESSAGE_PARTY);
 	registerEnum(MESSAGE_REPORT);
 	registerEnum(MESSAGE_HOTKEY_PRESSED);
-	registerEnum(MESSAGE_MARKET);
 	registerEnum(MESSAGE_BEYOND_LAST);
 	registerEnum(MESSAGE_TOURNAMENT_INFO);
 	registerEnum(MESSAGE_ATTENTION);
@@ -2176,7 +2174,6 @@ void LuaScriptInterface::registerFunctions()
 	registerEnumIn("configKeys", ConfigManager::ALLOW_CLONES);
 	registerEnumIn("configKeys", ConfigManager::BIND_ONLY_GLOBAL_ADDRESS);
 	registerEnumIn("configKeys", ConfigManager::OPTIMIZE_DATABASE);
-	registerEnumIn("configKeys", ConfigManager::MARKET_PREMIUM);
 	registerEnumIn("configKeys", ConfigManager::EMOTE_SPELLS);
 	registerEnumIn("configKeys", ConfigManager::STAMINA_SYSTEM);
 	registerEnumIn("configKeys", ConfigManager::WARN_UNSAFE_SCRIPTS);
@@ -2236,9 +2233,6 @@ void LuaScriptInterface::registerFunctions()
 	registerEnumIn("configKeys", ConfigManager::LOGIN_PORT);
 	registerEnumIn("configKeys", ConfigManager::STATUS_PORT);
 	registerEnumIn("configKeys", ConfigManager::STAIRHOP_DELAY);
-	registerEnumIn("configKeys", ConfigManager::MARKET_OFFER_DURATION);
-	registerEnumIn("configKeys", ConfigManager::CHECK_EXPIRED_MARKET_OFFERS_EACH_MINUTES);
-	registerEnumIn("configKeys", ConfigManager::MAX_MARKET_OFFERS_AT_A_TIME_PER_PLAYER);
 	registerEnumIn("configKeys", ConfigManager::EXP_FROM_PLAYERS_LEVEL_RANGE);
 	registerEnumIn("configKeys", ConfigManager::MAX_PACKETS_PER_SECOND);
 	registerEnumIn("configKeys", ConfigManager::TWO_FACTOR_AUTH);
@@ -2440,8 +2434,6 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("ModalWindow", "hasPriority", LuaScriptInterface::luaModalWindowHasPriority);
 	registerMethod("ModalWindow", "setPriority", LuaScriptInterface::luaModalWindowSetPriority);
 
-	registerMethod("ModalWindow", "sendToPlayer", LuaScriptInterface::luaModalWindowSendToPlayer);
-
 	// Item
 	registerClass("Item", "", LuaScriptInterface::luaItemCreate);
 	registerMetaMethod("Item", "__eq", LuaScriptInterface::luaUserdataCompare);
@@ -2600,11 +2592,6 @@ void LuaScriptInterface::registerFunctions()
 
 	registerMethod("Creature", "getZone", LuaScriptInterface::luaCreatureGetZone);
 
-	registerMethod("Creature", "hasIcon", LuaScriptInterface::luaCreatureHasIcon);
-	registerMethod("Creature", "setIcon", LuaScriptInterface::luaCreatureSetIcon);
-	registerMethod("Creature", "getIcon", LuaScriptInterface::luaCreatureGetIcon);
-	registerMethod("Creature", "removeIcon", LuaScriptInterface::luaCreatureRemoveIcon);
-
 	registerMethod("Creature", "getStorageValue", LuaScriptInterface::luaCreatureGetStorageValue);
 	registerMethod("Creature", "setStorageValue", LuaScriptInterface::luaCreatureSetStorageValue);
 
@@ -2737,11 +2724,6 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Player", "canWearOutfit", LuaScriptInterface::luaPlayerCanWearOutfit);
 	registerMethod("Player", "sendOutfitWindow", LuaScriptInterface::luaPlayerSendOutfitWindow);
 
-	registerMethod("Player", "addMount", LuaScriptInterface::luaPlayerAddMount);
-	registerMethod("Player", "removeMount", LuaScriptInterface::luaPlayerRemoveMount);
-	registerMethod("Player", "hasMount", LuaScriptInterface::luaPlayerHasMount);
-	registerMethod("Player", "toggleMount", LuaScriptInterface::luaPlayerToggleMount);
-
 	registerMethod("Player", "getPremiumEndsAt", LuaScriptInterface::luaPlayerGetPremiumEndsAt);
 	registerMethod("Player", "setPremiumEndsAt", LuaScriptInterface::luaPlayerSetPremiumEndsAt);
 
@@ -2799,8 +2781,6 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Player", "setClientLowLevelBonusDisplay",
 	               LuaScriptInterface::luaPlayerSetClientLowLevelBonusDisplay);
 
-	registerMethod("Player", "sendResourceBalance", LuaScriptInterface::luaPlayerSendResourceBalance);
-
 	// Monster
 	registerClass("Monster", "Creature", LuaScriptInterface::luaMonsterCreate);
 	registerMetaMethod("Monster", "__eq", LuaScriptInterface::luaUserdataCompare);
@@ -2837,11 +2817,6 @@ void LuaScriptInterface::registerFunctions()
 
 	registerMethod("Monster", "isWalkingToSpawn", LuaScriptInterface::luaMonsterIsWalkingToSpawn);
 	registerMethod("Monster", "walkToSpawn", LuaScriptInterface::luaMonsterWalkToSpawn);
-
-	registerMethod("Monster", "hasSpecialIcon", LuaScriptInterface::luaMonsterHasIcon);
-	registerMethod("Monster", "setSpecialIcon", LuaScriptInterface::luaMonsterSetIcon);
-	registerMethod("Monster", "getSpecialIcon", LuaScriptInterface::luaMonsterGetIcon);
-	registerMethod("Monster", "removeSpecialIcon", LuaScriptInterface::luaMonsterRemoveIcon);
 
 	// Npc
 	registerClass("Npc", "Creature", LuaScriptInterface::luaNpcCreate);
@@ -6555,27 +6530,6 @@ int LuaScriptInterface::luaModalWindowSetPriority(lua_State* L)
 	return 1;
 }
 
-int LuaScriptInterface::luaModalWindowSendToPlayer(lua_State* L)
-{
-	// modalWindow:sendToPlayer(player)
-	Player* player = getPlayer(L, 2);
-	if (!player) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		if (!player->hasModalWindowOpen(window->id)) {
-			player->sendModalWindow(*window);
-		}
-		pushBoolean(L, true);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
 // Item
 int LuaScriptInterface::luaItemCreate(lua_State* L)
 {
@@ -8603,84 +8557,6 @@ int LuaScriptInterface::luaCreatureGetZone(lua_State* L)
 	return 1;
 }
 
-int LuaScriptInterface::luaCreatureHasIcon(lua_State* L)
-{
-	// creature:hasIcon(iconId)
-	const Creature* creature = getUserdata<const Creature>(L, 1);
-	if (creature) {
-		auto iconId = getNumber<CreatureIcon_t>(L, 2);
-		pushBoolean(L, creature->getIcons().contains(iconId));
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaCreatureSetIcon(lua_State* L)
-{
-	// creature:setIcon(iconId, value)
-	Creature* creature = getUserdata<Creature>(L, 1);
-	if (!creature) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	auto iconId = getNumber<CreatureIcon_t>(L, 2);
-	if (iconId > CREATURE_ICON_LAST) {
-		reportErrorFunc(L, "Invalid Creature Icon Id");
-		pushBoolean(L, false);
-		return 1;
-	}
-
-	creature->getIcons()[iconId] = getNumber<uint16_t>(L, 3);
-	creature->updateIcons();
-	pushBoolean(L, true);
-	return 1;
-}
-
-int LuaScriptInterface::luaCreatureGetIcon(lua_State* L)
-{
-	// creature:getIcon(iconId)
-	const Creature* creature = getUserdata<const Creature>(L, 1);
-	if (!creature) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	auto iconId = getNumber<CreatureIcon_t>(L, 2);
-	const auto& icons = creature->getIcons();
-	auto it = icons.find(iconId);
-	if (it != icons.end()) {
-		lua_pushinteger(L, it->second);
-	} else {
-		lua_pushinteger(L, 0);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaCreatureRemoveIcon(lua_State* L)
-{
-	// creature:removeIcon(iconId)
-	Creature* creature = getUserdata<Creature>(L, 1);
-	if (!creature) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	auto iconId = getNumber<CreatureIcon_t>(L, 2);
-	auto& icons = creature->getIcons();
-	auto it = icons.find(iconId);
-	if (it != icons.end()) {
-		icons.erase(it);
-		creature->updateIcons();
-		pushBoolean(L, true);
-	} else {
-		pushBoolean(L, false);
-	}
-
-	return 1;
-}
-
 int LuaScriptInterface::luaCreatureGetStorageValue(lua_State* L)
 {
 	// creature:getStorageValue(key)
@@ -9378,7 +9254,6 @@ int LuaScriptInterface::luaPlayerAddOfflineTrainingTries(lua_State* L)
 	if (player) {
 		skills_t skillType = getNumber<skills_t>(L, 2);
 		uint64_t tries = getNumber<uint64_t>(L, 3);
-		pushBoolean(L, player->addOfflineTrainingTries(skillType, tries));
 	} else {
 		lua_pushnil(L);
 	}
@@ -9965,7 +9840,6 @@ int LuaScriptInterface::luaPlayerSendSupplyUsed(lua_State* L)
 		return 1;
 	}
 
-	player->sendSupplyUsed(item->getClientID());
 	pushBoolean(L, true);
 	return 1;
 }
@@ -10313,92 +10187,6 @@ int LuaScriptInterface::luaPlayerSendOutfitWindow(lua_State* L)
 	} else {
 		lua_pushnil(L);
 	}
-	return 1;
-}
-
-int LuaScriptInterface::luaPlayerAddMount(lua_State* L)
-{
-	// player:addMount(mountId or mountName)
-	Player* player = getUserdata<Player>(L, 1);
-	if (!player) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	uint16_t mountId;
-	if (isNumber(L, 2)) {
-		mountId = getNumber<uint16_t>(L, 2);
-	} else {
-		Mount* mount = g_game.mounts.getMountByName(getString(L, 2));
-		if (!mount) {
-			lua_pushnil(L);
-			return 1;
-		}
-		mountId = mount->id;
-	}
-	pushBoolean(L, player->tameMount(mountId));
-	return 1;
-}
-
-int LuaScriptInterface::luaPlayerRemoveMount(lua_State* L)
-{
-	// player:removeMount(mountId or mountName)
-	Player* player = getUserdata<Player>(L, 1);
-	if (!player) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	uint16_t mountId;
-	if (isNumber(L, 2)) {
-		mountId = getNumber<uint16_t>(L, 2);
-	} else {
-		Mount* mount = g_game.mounts.getMountByName(getString(L, 2));
-		if (!mount) {
-			lua_pushnil(L);
-			return 1;
-		}
-		mountId = mount->id;
-	}
-	pushBoolean(L, player->untameMount(mountId));
-	return 1;
-}
-
-int LuaScriptInterface::luaPlayerHasMount(lua_State* L)
-{
-	// player:hasMount(mountId or mountName)
-	const Player* player = getUserdata<const Player>(L, 1);
-	if (!player) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	Mount* mount = nullptr;
-	if (isNumber(L, 2)) {
-		mount = g_game.mounts.getMountByID(getNumber<uint16_t>(L, 2));
-	} else {
-		mount = g_game.mounts.getMountByName(getString(L, 2));
-	}
-
-	if (mount) {
-		pushBoolean(L, player->hasMount(mount));
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaPlayerToggleMount(lua_State* L)
-{
-	// player:toggleMount(mount)
-	Player* player = getUserdata<Player>(L, 1);
-	if (!player) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	bool mount = getBoolean(L, 2);
-	pushBoolean(L, player->toggleMount(mount));
 	return 1;
 }
 
@@ -11030,21 +10818,6 @@ int LuaScriptInterface::luaPlayerSetClientLowLevelBonusDisplay(lua_State* L)
 	return 1;
 }
 
-int LuaScriptInterface::luaPlayerSendResourceBalance(lua_State* L)
-{
-	// player:sendResourceBalance(resource, amount)
-	Player* player = getUserdata<Player>(L, 1);
-	if (player) {
-		const ResourceTypes_t resourceType = getNumber<ResourceTypes_t>(L, 2);
-		uint64_t amount = getNumber<uint64_t>(L, 3);
-		player->sendResourceBalance(resourceType, amount);
-		pushBoolean(L, true);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
 // Monster
 int LuaScriptInterface::luaMonsterCreate(lua_State* L)
 {
@@ -11434,83 +11207,6 @@ int LuaScriptInterface::luaMonsterWalkToSpawn(lua_State* L)
 		pushBoolean(L, monster->walkToSpawn());
 	} else {
 		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaMonsterHasIcon(lua_State* L)
-{
-	// monster:hasSpecialIcon(iconId)
-	const Monster* monster = getUserdata<const Monster>(L, 1);
-	if (monster) {
-		auto iconId = getNumber<MonsterIcon_t>(L, 2);
-		pushBoolean(L, monster->getSpecialIcons().contains(iconId));
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaMonsterSetIcon(lua_State* L)
-{
-	// monster:setSpecialIcon(iconId, value)
-	Monster* monster = getUserdata<Monster>(L, 1);
-	if (!monster) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	auto iconId = getNumber<MonsterIcon_t>(L, 2);
-	if (iconId > MONSTER_ICON_LAST) {
-		reportErrorFunc(L, "Invalid Monster Icon Id");
-		pushBoolean(L, false);
-		return 1;
-	}
-
-	monster->getSpecialIcons()[iconId] = getNumber<uint16_t>(L, 3);
-	monster->updateIcons();
-	pushBoolean(L, true);
-	return 1;
-}
-
-int LuaScriptInterface::luaMonsterGetIcon(lua_State* L)
-{
-	// monster:getSpecialIcon(iconId)
-	Monster* monster = getUserdata<Monster>(L, 1);
-	if (!monster) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	auto iconId = getNumber<MonsterIcon_t>(L, 2);
-	const auto& icons = monster->getSpecialIcons();
-	auto it = icons.find(iconId);
-	if (it != icons.end()) {
-		lua_pushinteger(L, it->second);
-	} else {
-		lua_pushinteger(L, 0);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaMonsterRemoveIcon(lua_State* L)
-{
-	// monster:removeSpecialIcon(iconId)
-	Monster* monster = getUserdata<Monster>(L, 1);
-	if (!monster) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	auto iconId = getNumber<MonsterIcon_t>(L, 2);
-	auto& icons = monster->getSpecialIcons();
-	auto it = icons.find(iconId);
-	if (it != icons.end()) {
-		icons.erase(it);
-		monster->updateIcons();
-		pushBoolean(L, true);
-	} else {
-		pushBoolean(L, false);
 	}
 	return 1;
 }
@@ -13754,48 +13450,6 @@ int LuaScriptInterface::luaItemTypeGetMinReqMagicLevel(lua_State* L)
 	const ItemType* itemType = getUserdata<const ItemType>(L, 1);
 	if (itemType) {
 		lua_pushinteger(L, itemType->minReqMagicLevel);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaItemTypeGetMarketBuyStatistics(lua_State* L)
-{
-	// itemType:getMarketBuyStatistics()
-	const ItemType* itemType = getUserdata<const ItemType>(L, 1);
-	if (itemType) {
-		MarketStatistics* statistics = IOMarket::getInstance().getPurchaseStatistics(itemType->id);
-		if (statistics) {
-			lua_createtable(L, 4, 0);
-			setField(L, "numTransactions", statistics->numTransactions);
-			setField(L, "totalPrice", statistics->totalPrice);
-			setField(L, "highestPrice", statistics->highestPrice);
-			setField(L, "lowestPrice", statistics->lowestPrice);
-		} else {
-			lua_pushnil(L);
-		}
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaItemTypeGetMarketSellStatistics(lua_State* L)
-{
-	// itemType:getMarketSellStatistics()
-	const ItemType* itemType = getUserdata<const ItemType>(L, 1);
-	if (itemType) {
-		MarketStatistics* statistics = IOMarket::getInstance().getSaleStatistics(itemType->id);
-		if (statistics) {
-			lua_createtable(L, 4, 0);
-			setField(L, "numTransactions", statistics->numTransactions);
-			setField(L, "totalPrice", statistics->totalPrice);
-			setField(L, "highestPrice", statistics->highestPrice);
-			setField(L, "lowestPrice", statistics->lowestPrice);
-		} else {
-			lua_pushnil(L);
-		}
 	} else {
 		lua_pushnil(L);
 	}
