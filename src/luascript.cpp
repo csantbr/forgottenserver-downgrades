@@ -775,20 +775,11 @@ Outfit_t LuaScriptInterface::getOutfit(lua_State* L, int32_t arg)
 {
 	Outfit_t outfit;
 
-	outfit.lookType = getField<uint16_t>(L, arg, "lookType");
-	outfit.lookTypeEx = getField<uint16_t>(L, arg, "lookTypeEx");
-
-	outfit.lookHead = getField<uint8_t>(L, arg, "lookHead");
-	outfit.lookBody = getField<uint8_t>(L, arg, "lookBody");
-	outfit.lookLegs = getField<uint8_t>(L, arg, "lookLegs");
-	outfit.lookFeet = getField<uint8_t>(L, arg, "lookFeet");
-	outfit.lookAddons = getField<uint8_t>(L, arg, "lookAddons");
-
-	outfit.lookMount = getField<uint16_t>(L, arg, "lookMount");
-	outfit.lookMountHead = getField<uint8_t>(L, arg, "lookMountHead");
-	outfit.lookMountBody = getField<uint8_t>(L, arg, "lookMountBody");
-	outfit.lookMountLegs = getField<uint8_t>(L, arg, "lookMountLegs");
-	outfit.lookMountFeet = getField<uint8_t>(L, arg, "lookMountFeet");
+	outfit.lookHead = getField<uint8_t>(L, arg, "lookHead"),
+	outfit.lookBody = getField<uint8_t>(L, arg, "lookBody"),
+	outfit.lookLegs = getField<uint8_t>(L, arg, "lookLegs"),
+	outfit.lookFeet = getField<uint8_t>(L, arg, "lookFeet"),
+	outfit.lookAddons = getField<uint8_t>(L, arg, "lookAddons"),
 
 	lua_pop(L, 12);
 	return outfit;
@@ -1004,11 +995,6 @@ void LuaScriptInterface::pushOutfit(lua_State* L, const Outfit_t& outfit)
 	setField(L, "lookLegs", outfit.lookLegs);
 	setField(L, "lookFeet", outfit.lookFeet);
 	setField(L, "lookAddons", outfit.lookAddons);
-	setField(L, "lookMount", outfit.lookMount);
-	setField(L, "lookMountHead", outfit.lookMountHead);
-	setField(L, "lookMountBody", outfit.lookMountBody);
-	setField(L, "lookMountLegs", outfit.lookMountLegs);
-	setField(L, "lookMountFeet", outfit.lookMountFeet);
 }
 
 void LuaScriptInterface::pushOutfit(lua_State* L, const Outfit* outfit)
@@ -1019,16 +1005,6 @@ void LuaScriptInterface::pushOutfit(lua_State* L, const Outfit* outfit)
 	setField(L, "premium", outfit->premium);
 	setField(L, "unlocked", outfit->unlocked);
 	setMetatable(L, -1, "Outfit");
-}
-
-void LuaScriptInterface::pushMount(lua_State* L, const Mount* mount)
-{
-	lua_createtable(L, 0, 5);
-	setField(L, "name", mount->name);
-	setField(L, "speed", mount->speed);
-	setField(L, "clientId", mount->clientId);
-	setField(L, "id", mount->id);
-	setField(L, "premium", mount->premium);
 }
 
 void LuaScriptInterface::pushLoot(lua_State* L, const std::vector<LootBlock>& lootList)
@@ -1281,9 +1257,6 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(CONDITION_EXHAUST_COMBAT);
 	registerEnum(CONDITION_EXHAUST_HEAL);
 	registerEnum(CONDITION_PACIFIED);
-	registerEnum(CONDITION_SPELLCOOLDOWN);
-	registerEnum(CONDITION_SPELLGROUPCOOLDOWN);
-	registerEnum(CONDITION_ROOT);
 
 	registerEnum(CONDITIONID_DEFAULT);
 	registerEnum(CONDITIONID_COMBAT);
@@ -1423,75 +1396,6 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(CONST_ME_SMOKE);
 	registerEnum(CONST_ME_INSECTS);
 	registerEnum(CONST_ME_DRAGONHEAD);
-	registerEnum(CONST_ME_ORCSHAMAN);
-	registerEnum(CONST_ME_ORCSHAMAN_FIRE);
-	registerEnum(CONST_ME_THUNDER);
-	registerEnum(CONST_ME_FERUMBRAS);
-	registerEnum(CONST_ME_CONFETTI_HORIZONTAL);
-	registerEnum(CONST_ME_CONFETTI_VERTICAL);
-	registerEnum(CONST_ME_BLACKSMOKE);
-	registerEnum(CONST_ME_REDSMOKE);
-	registerEnum(CONST_ME_YELLOWSMOKE);
-	registerEnum(CONST_ME_GREENSMOKE);
-	registerEnum(CONST_ME_PURPLESMOKE);
-	registerEnum(CONST_ME_EARLY_THUNDER);
-	registerEnum(CONST_ME_RAGIAZ_BONECAPSULE);
-	registerEnum(CONST_ME_CRITICAL_DAMAGE);
-	registerEnum(CONST_ME_PLUNGING_FISH);
-	registerEnum(CONST_ME_BLUECHAIN);
-	registerEnum(CONST_ME_ORANGECHAIN);
-	registerEnum(CONST_ME_GREENCHAIN);
-	registerEnum(CONST_ME_PURPLECHAIN);
-	registerEnum(CONST_ME_GREYCHAIN);
-	registerEnum(CONST_ME_YELLOWCHAIN);
-	registerEnum(CONST_ME_YELLOWSPARKLES);
-	registerEnum(CONST_ME_FAEEXPLOSION);
-	registerEnum(CONST_ME_FAECOMING);
-	registerEnum(CONST_ME_FAEGOING);
-	registerEnum(CONST_ME_BIGCLOUDSSINGLESPACE);
-	registerEnum(CONST_ME_STONESSINGLESPACE);
-	registerEnum(CONST_ME_BLUEGHOST);
-	registerEnum(CONST_ME_POINTOFINTEREST);
-	registerEnum(CONST_ME_MAPEFFECT);
-	registerEnum(CONST_ME_PINKSPARK);
-	registerEnum(CONST_ME_FIREWORK_GREEN);
-	registerEnum(CONST_ME_FIREWORK_ORANGE);
-	registerEnum(CONST_ME_FIREWORK_PURPLE);
-	registerEnum(CONST_ME_FIREWORK_TURQUOISE);
-	registerEnum(CONST_ME_THECUBE);
-	registerEnum(CONST_ME_DRAWINK);
-	registerEnum(CONST_ME_PRISMATICSPARKLES);
-	registerEnum(CONST_ME_THAIAN);
-	registerEnum(CONST_ME_THAIANGHOST);
-	registerEnum(CONST_ME_GHOSTSMOKE);
-	registerEnum(CONST_ME_FLOATINGBLOCK);
-	registerEnum(CONST_ME_BLOCK);
-	registerEnum(CONST_ME_ROOTING);
-	registerEnum(CONST_ME_GHOSTLYSCRATCH);
-	registerEnum(CONST_ME_GHOSTLYBITE);
-	registerEnum(CONST_ME_BIGSCRATCHING);
-	registerEnum(CONST_ME_SLASH);
-	registerEnum(CONST_ME_BITE);
-	registerEnum(CONST_ME_CHIVALRIOUSCHALLENGE);
-	registerEnum(CONST_ME_DIVINEDAZZLE);
-	registerEnum(CONST_ME_ELECTRICALSPARK);
-	registerEnum(CONST_ME_PURPLETELEPORT);
-	registerEnum(CONST_ME_REDTELEPORT);
-	registerEnum(CONST_ME_ORANGETELEPORT);
-	registerEnum(CONST_ME_GREYTELEPORT);
-	registerEnum(CONST_ME_LIGHTBLUETELEPORT);
-	registerEnum(CONST_ME_FATAL);
-	registerEnum(CONST_ME_DODGE);
-	registerEnum(CONST_ME_HOURGLASS);
-	registerEnum(CONST_ME_FIREWORKSSTAR);
-	registerEnum(CONST_ME_FIREWORKSCIRCLE);
-	registerEnum(CONST_ME_FERUMBRAS_1);
-	registerEnum(CONST_ME_GAZHARAGOTH);
-	registerEnum(CONST_ME_MAD_MAGE);
-	registerEnum(CONST_ME_HORESTIS);
-	registerEnum(CONST_ME_DEVOVORGA);
-	registerEnum(CONST_ME_FERUMBRAS_2);
-	registerEnum(CONST_ME_FOAM);
 
 	registerEnum(CONST_ANI_NONE);
 	registerEnum(CONST_ANI_SPEAR);
@@ -1535,19 +1439,6 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(CONST_ANI_SMALLEARTH);
 	registerEnum(CONST_ANI_EARTHARROW);
 	registerEnum(CONST_ANI_EXPLOSION);
-	registerEnum(CONST_ANI_CAKE);
-	registerEnum(CONST_ANI_TARSALARROW);
-	registerEnum(CONST_ANI_VORTEXBOLT);
-	registerEnum(CONST_ANI_PRISMATICBOLT);
-	registerEnum(CONST_ANI_CRYSTALLINEARROW);
-	registerEnum(CONST_ANI_DRILLBOLT);
-	registerEnum(CONST_ANI_ENVENOMEDARROW);
-	registerEnum(CONST_ANI_GLOOTHSPEAR);
-	registerEnum(CONST_ANI_SIMPLEARROW);
-	registerEnum(CONST_ANI_LEAFSTAR);
-	registerEnum(CONST_ANI_DIAMONDARROW);
-	registerEnum(CONST_ANI_SPECTRALBOLT);
-	registerEnum(CONST_ANI_ROYALSTAR);
 	registerEnum(CONST_ANI_WEAPONTYPE);
 
 	registerEnum(CONST_PROP_BLOCKSOLID);
@@ -1604,30 +1495,9 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(MESSAGE_STATUS_DEFAULT);
 	registerEnum(MESSAGE_STATUS_WARNING);
 	registerEnum(MESSAGE_EVENT_ADVANCE);
-	registerEnum(MESSAGE_STATUS_WARNING2);
 	registerEnum(MESSAGE_STATUS_SMALL);
 	registerEnum(MESSAGE_INFO_DESCR);
-	registerEnum(MESSAGE_DAMAGE_DEALT);
-	registerEnum(MESSAGE_DAMAGE_RECEIVED);
-	registerEnum(MESSAGE_HEALED);
-	registerEnum(MESSAGE_EXPERIENCE);
-	registerEnum(MESSAGE_DAMAGE_OTHERS);
-	registerEnum(MESSAGE_HEALED_OTHERS);
-	registerEnum(MESSAGE_EXPERIENCE_OTHERS);
 	registerEnum(MESSAGE_EVENT_DEFAULT);
-	registerEnum(MESSAGE_LOOT);
-	registerEnum(MESSAGE_TRADE);
-	registerEnum(MESSAGE_GUILD);
-	registerEnum(MESSAGE_PARTY_MANAGEMENT);
-	registerEnum(MESSAGE_PARTY);
-	registerEnum(MESSAGE_REPORT);
-	registerEnum(MESSAGE_HOTKEY_PRESSED);
-	registerEnum(MESSAGE_BEYOND_LAST);
-	registerEnum(MESSAGE_TOURNAMENT_INFO);
-	registerEnum(MESSAGE_ATTENTION);
-	registerEnum(MESSAGE_BOOSTED_CREATURE);
-	registerEnum(MESSAGE_OFFLINE_TRAINING);
-	registerEnum(MESSAGE_TRANSACTION);
 
 	registerEnum(CREATURETYPE_PLAYER);
 	registerEnum(CREATURETYPE_MONSTER);
@@ -1861,21 +1731,15 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(TALKTYPE_SAY);
 	registerEnum(TALKTYPE_WHISPER);
 	registerEnum(TALKTYPE_YELL);
-	registerEnum(TALKTYPE_PRIVATE_FROM);
-	registerEnum(TALKTYPE_PRIVATE_TO);
 	registerEnum(TALKTYPE_CHANNEL_Y);
 	registerEnum(TALKTYPE_CHANNEL_O);
-	registerEnum(TALKTYPE_SPELL);
 	registerEnum(TALKTYPE_PRIVATE_NP);
-	registerEnum(TALKTYPE_PRIVATE_NP_CONSOLE);
 	registerEnum(TALKTYPE_PRIVATE_PN);
 	registerEnum(TALKTYPE_BROADCAST);
 	registerEnum(TALKTYPE_CHANNEL_R1);
-	registerEnum(TALKTYPE_PRIVATE_RED_FROM);
-	registerEnum(TALKTYPE_PRIVATE_RED_TO);
 	registerEnum(TALKTYPE_MONSTER_SAY);
 	registerEnum(TALKTYPE_MONSTER_YELL);
-	registerEnum(TALKTYPE_POTION);
+	registerEnum(TALKTYPE_CHANNEL_R2);
 
 	registerEnum(TEXTCOLOR_BLUE);
 	registerEnum(TEXTCOLOR_LIGHTGREEN);
@@ -2083,7 +1947,6 @@ void LuaScriptInterface::registerFunctions()
 	registerEnum(RELOAD_TYPE_GLOBALEVENTS);
 	registerEnum(RELOAD_TYPE_ITEMS);
 	registerEnum(RELOAD_TYPE_MONSTERS);
-	registerEnum(RELOAD_TYPE_MOUNTS);
 	registerEnum(RELOAD_TYPE_MOVEMENTS);
 	registerEnum(RELOAD_TYPE_NPCS);
 	registerEnum(RELOAD_TYPE_QUESTS);
@@ -2286,13 +2149,9 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Game", "getBestiary", LuaScriptInterface::luaGameGetBestiary);
 	registerMethod("Game", "getCurrencyItems", LuaScriptInterface::luaGameGetCurrencyItems);
 	registerMethod("Game", "getItemTypeByClientId", LuaScriptInterface::luaGameGetItemTypeByClientId);
-	registerMethod("Game", "getMountIdByLookType", LuaScriptInterface::luaGameGetMountIdByLookType);
 
 	registerMethod("Game", "getTowns", LuaScriptInterface::luaGameGetTowns);
 	registerMethod("Game", "getHouses", LuaScriptInterface::luaGameGetHouses);
-	registerMethod("Game", "getOutfits", LuaScriptInterface::luaGameGetOutfits);
-	registerMethod("Game", "getMounts", LuaScriptInterface::luaGameGetMounts);
-	registerMethod("Game", "getVocations", LuaScriptInterface::luaGameGetVocations);
 
 	registerMethod("Game", "getGameState", LuaScriptInterface::luaGameGetGameState);
 	registerMethod("Game", "setGameState", LuaScriptInterface::luaGameSetGameState);
@@ -2405,34 +2264,6 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("NetworkMessage", "len", LuaScriptInterface::luaNetworkMessageLength);
 	registerMethod("NetworkMessage", "skipBytes", LuaScriptInterface::luaNetworkMessageSkipBytes);
 	registerMethod("NetworkMessage", "sendToPlayer", LuaScriptInterface::luaNetworkMessageSendToPlayer);
-
-	// ModalWindow
-	registerClass("ModalWindow", "", LuaScriptInterface::luaModalWindowCreate);
-	registerMetaMethod("ModalWindow", "__eq", LuaScriptInterface::luaUserdataCompare);
-	registerMetaMethod("ModalWindow", "__gc", LuaScriptInterface::luaModalWindowDelete);
-	registerMethod("ModalWindow", "delete", LuaScriptInterface::luaModalWindowDelete);
-
-	registerMethod("ModalWindow", "getId", LuaScriptInterface::luaModalWindowGetId);
-	registerMethod("ModalWindow", "getTitle", LuaScriptInterface::luaModalWindowGetTitle);
-	registerMethod("ModalWindow", "getMessage", LuaScriptInterface::luaModalWindowGetMessage);
-
-	registerMethod("ModalWindow", "setTitle", LuaScriptInterface::luaModalWindowSetTitle);
-	registerMethod("ModalWindow", "setMessage", LuaScriptInterface::luaModalWindowSetMessage);
-
-	registerMethod("ModalWindow", "getButtonCount", LuaScriptInterface::luaModalWindowGetButtonCount);
-	registerMethod("ModalWindow", "getChoiceCount", LuaScriptInterface::luaModalWindowGetChoiceCount);
-
-	registerMethod("ModalWindow", "addButton", LuaScriptInterface::luaModalWindowAddButton);
-	registerMethod("ModalWindow", "addChoice", LuaScriptInterface::luaModalWindowAddChoice);
-
-	registerMethod("ModalWindow", "getDefaultEnterButton", LuaScriptInterface::luaModalWindowGetDefaultEnterButton);
-	registerMethod("ModalWindow", "setDefaultEnterButton", LuaScriptInterface::luaModalWindowSetDefaultEnterButton);
-
-	registerMethod("ModalWindow", "getDefaultEscapeButton", LuaScriptInterface::luaModalWindowGetDefaultEscapeButton);
-	registerMethod("ModalWindow", "setDefaultEscapeButton", LuaScriptInterface::luaModalWindowSetDefaultEscapeButton);
-
-	registerMethod("ModalWindow", "hasPriority", LuaScriptInterface::luaModalWindowHasPriority);
-	registerMethod("ModalWindow", "setPriority", LuaScriptInterface::luaModalWindowSetPriority);
 
 	// Item
 	registerClass("Item", "", LuaScriptInterface::luaItemCreate);
@@ -4734,22 +4565,6 @@ int LuaScriptInterface::luaGameGetItemTypeByClientId(lua_State* L)
 	return 1;
 }
 
-int LuaScriptInterface::luaGameGetMountIdByLookType(lua_State* L)
-{
-	// Game.getMountIdByLookType(lookType)
-	Mount* mount = nullptr;
-	if (isNumber(L, 1)) {
-		mount = g_game.mounts.getMountByClientID(getNumber<uint16_t>(L, 1));
-	}
-
-	if (mount) {
-		lua_pushnumber(L, mount->id);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
 int LuaScriptInterface::luaGameGetTowns(lua_State* L)
 {
 	// Game.getTowns()
@@ -4777,63 +4592,6 @@ int LuaScriptInterface::luaGameGetHouses(lua_State* L)
 		setMetatable(L, -1, "House");
 		lua_rawseti(L, -2, ++index);
 	}
-	return 1;
-}
-
-int LuaScriptInterface::luaGameGetOutfits(lua_State* L)
-{
-	// Game.getOutfits(playerSex)
-	if (!isNumber(L, 1)) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	PlayerSex_t playerSex = getNumber<PlayerSex_t>(L, 1);
-	if (playerSex > PLAYERSEX_LAST) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	const auto& outfits = Outfits::getInstance().getOutfits(playerSex);
-	lua_createtable(L, outfits.size(), 0);
-
-	int index = 0;
-	for (const auto& outfit : outfits) {
-		pushOutfit(L, &outfit);
-		lua_rawseti(L, -2, ++index);
-	}
-
-	return 1;
-}
-
-int LuaScriptInterface::luaGameGetMounts(lua_State* L)
-{
-	// Game.getMounts()
-	const auto& mounts = g_game.mounts.getMounts();
-	lua_createtable(L, mounts.size(), 0);
-
-	int index = 0;
-	for (const auto& mount : mounts) {
-		pushMount(L, &mount);
-		lua_rawseti(L, -2, ++index);
-	}
-
-	return 1;
-}
-
-int LuaScriptInterface::luaGameGetVocations(lua_State* L)
-{
-	// Game.getVocations()
-	const auto& vocations = g_vocations.getVocations();
-	lua_createtable(L, vocations.size(), 0);
-
-	int index = 0;
-	for (const auto& [id, vocation] : vocations) {
-		pushUserdata<const Vocation>(L, &vocation);
-		setMetatable(L, -1, "Vocation");
-		lua_rawseti(L, -2, ++index);
-	}
-
 	return 1;
 }
 
@@ -6309,222 +6067,6 @@ int LuaScriptInterface::luaNetworkMessageSendToPlayer(lua_State* L)
 		pushBoolean(L, true);
 	} else {
 		reportErrorFunc(L, getErrorDesc(LUA_ERROR_PLAYER_NOT_FOUND));
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-// ModalWindow
-int LuaScriptInterface::luaModalWindowCreate(lua_State* L)
-{
-	// ModalWindow(id, title, message)
-	const std::string& message = getString(L, 4);
-	const std::string& title = getString(L, 3);
-	uint32_t id = getNumber<uint32_t>(L, 2);
-
-	pushUserdata<ModalWindow>(L, new ModalWindow(id, title, message));
-	setMetatable(L, -1, "ModalWindow");
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowDelete(lua_State* L)
-{
-	ModalWindow** windowPtr = getRawUserdata<ModalWindow>(L, 1);
-	if (windowPtr && *windowPtr) {
-		delete *windowPtr;
-		*windowPtr = nullptr;
-	}
-	return 0;
-}
-
-int LuaScriptInterface::luaModalWindowGetId(lua_State* L)
-{
-	// modalWindow:getId()
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		lua_pushnumber(L, window->id);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowGetTitle(lua_State* L)
-{
-	// modalWindow:getTitle()
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		pushString(L, window->title);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowGetMessage(lua_State* L)
-{
-	// modalWindow:getMessage()
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		pushString(L, window->message);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowSetTitle(lua_State* L)
-{
-	// modalWindow:setTitle(text)
-	const std::string& text = getString(L, 2);
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		window->title = text;
-		pushBoolean(L, true);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowSetMessage(lua_State* L)
-{
-	// modalWindow:setMessage(text)
-	const std::string& text = getString(L, 2);
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		window->message = text;
-		pushBoolean(L, true);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowGetButtonCount(lua_State* L)
-{
-	// modalWindow:getButtonCount()
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		lua_pushnumber(L, window->buttons.size());
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowGetChoiceCount(lua_State* L)
-{
-	// modalWindow:getChoiceCount()
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		lua_pushnumber(L, window->choices.size());
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowAddButton(lua_State* L)
-{
-	// modalWindow:addButton(id, text)
-	const std::string& text = getString(L, 3);
-	uint8_t id = getNumber<uint8_t>(L, 2);
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		window->buttons.emplace_back(text, id);
-		pushBoolean(L, true);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowAddChoice(lua_State* L)
-{
-	// modalWindow:addChoice(id, text)
-	const std::string& text = getString(L, 3);
-	uint8_t id = getNumber<uint8_t>(L, 2);
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		window->choices.emplace_back(text, id);
-		pushBoolean(L, true);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowGetDefaultEnterButton(lua_State* L)
-{
-	// modalWindow:getDefaultEnterButton()
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		lua_pushnumber(L, window->defaultEnterButton);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowSetDefaultEnterButton(lua_State* L)
-{
-	// modalWindow:setDefaultEnterButton(buttonId)
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		window->defaultEnterButton = getNumber<uint8_t>(L, 2);
-		pushBoolean(L, true);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowGetDefaultEscapeButton(lua_State* L)
-{
-	// modalWindow:getDefaultEscapeButton()
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		lua_pushnumber(L, window->defaultEscapeButton);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowSetDefaultEscapeButton(lua_State* L)
-{
-	// modalWindow:setDefaultEscapeButton(buttonId)
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		window->defaultEscapeButton = getNumber<uint8_t>(L, 2);
-		pushBoolean(L, true);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowHasPriority(lua_State* L)
-{
-	// modalWindow:hasPriority()
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		pushBoolean(L, window->priority);
-	} else {
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-int LuaScriptInterface::luaModalWindowSetPriority(lua_State* L)
-{
-	// modalWindow:setPriority(priority)
-	ModalWindow* window = getUserdata<ModalWindow>(L, 1);
-	if (window) {
-		window->priority = getBoolean(L, 2);
-		pushBoolean(L, true);
-	} else {
 		lua_pushnil(L);
 	}
 	return 1;
@@ -10011,7 +9553,7 @@ int LuaScriptInterface::luaPlayerSendPrivateMessage(lua_State* L)
 
 	const Player* speaker = getUserdata<const Player>(L, 2);
 	const std::string& text = getString(L, 3);
-	SpeakClasses type = getNumber<SpeakClasses>(L, 4, TALKTYPE_PRIVATE_FROM);
+	SpeakClasses type = getNumber<SpeakClasses>(L, 4, TALKTYPE_PRIVATE);
 	player->sendPrivateMessage(speaker, type, text);
 	pushBoolean(L, true);
 	return 1;
@@ -14031,7 +13573,6 @@ int LuaScriptInterface::luaConditionSetOutfit(lua_State* L)
 	if (isTable(L, 2)) {
 		outfit = getOutfit(L, 2);
 	} else {
-		outfit.lookMount = getNumber<uint16_t>(L, 9, outfit.lookMount);
 		outfit.lookAddons = getNumber<uint8_t>(L, 8, outfit.lookAddons);
 		outfit.lookFeet = getNumber<uint8_t>(L, 7);
 		outfit.lookLegs = getNumber<uint8_t>(L, 6);
