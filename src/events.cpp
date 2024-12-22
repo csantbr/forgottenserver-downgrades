@@ -1158,24 +1158,24 @@ void Events::eventPlayerOnNetworkMessage(Player* player, uint8_t recvByte, Netwo
 		return;
 	}
 
-	if (!tfs::lua::reserveScriptEnv()) {
+	if (!scriptInterface.reserveScriptEnv()) {
 		std::cout << "[Error - Events::eventPlayerOnNetworkMessage] Call stack overflow" << std::endl;
 		return;
 	}
 
-	ScriptEnvironment* env = tfs::lua::getScriptEnv();
+	ScriptEnvironment* env = scriptInterface.getScriptEnv();
 	env->setScriptId(info.playerOnNetworkMessage, &scriptInterface);
 
 	lua_State* L = scriptInterface.getLuaState();
 	scriptInterface.pushFunction(info.playerOnNetworkMessage);
 
-	tfs::lua::pushUserdata(L, player);
-	tfs::lua::setMetatable(L, -1, "Player");
+	LuaScriptInterface::pushUserdata<Player>(L, player);
+	LuaScriptInterface::setMetatable(L, -1, "Player");
 
 	lua_pushnumber(L, recvByte);
 
-	tfs::lua::pushUserdata(L, msg);
-	tfs::lua::setMetatable(L, -1, "NetworkMessage");
+	LuaScriptInterface::pushUserdata(L, msg);
+	LuaScriptInterface::setMetatable(L, -1, "NetworkMessage");
 
 	scriptInterface.callVoidFunction(3);
 }

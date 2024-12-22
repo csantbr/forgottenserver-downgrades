@@ -32,12 +32,6 @@ void load(bool reload /*= false*/)
 	}
 
 	loaded = true;
-
-	if (!reload) {
-		fmt::print(">> NpcLib loaded\n");
-	} else {
-		fmt::print(">> NpcLib reloaded\n");
-	}
 }
 
 void reload()

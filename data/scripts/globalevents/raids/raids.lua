@@ -9,7 +9,6 @@ local running = nil
 local lastRaidEnd = 0
 
 function event.onTime(interval)
-	io.write(">> Executing raids event...\n")
 	if running then
 		return
 	end

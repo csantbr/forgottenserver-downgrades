@@ -1071,15 +1071,22 @@ const std::vector<Direction>& getShuffleDirections()
 
 uint32_t getIPFromString(const std::string& ipString)
 {
-	uint32_t ip = inet_addr(ipString.c_str());
-	if (ip == INADDR_NONE) {
-		hostent* hostname = gethostbyname(ipString.c_str());
-		if (hostname && hostname->h_addr_list[0]) {
-			in_addr addr;
-			memcpy(&addr, hostname->h_addr_list[0], sizeof(in_addr));
-			ip = inet_addr(inet_ntoa(addr));
-		}
-	}
+	struct addrinfo hints {};
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
 
-	return ip;
+    struct addrinfo* result = nullptr;
+    if (getaddrinfo(ipString.c_str(), nullptr, &hints, &result) != 0) {
+        return INADDR_NONE;
+    }
+
+    uint32_t ip = INADDR_NONE;
+    if (result) {
+        sockaddr_in* sockaddr_ipv4 = reinterpret_cast<sockaddr_in*>(result->ai_addr);
+        ip = sockaddr_ipv4->sin_addr.s_addr;
+        freeaddrinfo(result);
+    }
+
+    return ip;
 }
